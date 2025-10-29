@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今晚做什么？</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .result-container {
+            margin: 40px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
+        }
+        
+        .result-text {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.5s ease;
+        }
+        
+        .result-description {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 15px;
+            min-height: 30px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .rolling {
+            animation: pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { opacity: 0.7; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1.05); }
+        }
+        
+        .history {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .history h3 {
+            margin-bottom: 10px;
+            color: #555;
+            text-align: center;
+        }
+        
+        .history-list {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 今晚做什么？</h1>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="result-icon" id="resultIcon">🤔</div>
+            <div class="result-text" id="resultText">点击开始选择</div>
+            <div class="result-description" id="resultDescription"></div>
+        </div>
+        
+        <button id="chooseBtn" onclick="chooseActivity()">开始选择</button>
+        
+        <div class="history">
+            <h3>历史记录</h3>
+            <div class="history-list" id="historyList">
+                <!-- 历史记录将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>点击按钮随机选择今晚做练习还是打游戏</p>
+        </div>
+    </div>
+
+    <script>
+        // 活动选项
+        const activities = [
+            {
+                name: "做练习",
+                icon: "📚",
+                description: "好好学习，天天向上！"
+            },
+            {
+                name: "打游戏",
+                icon: "🎮",
+                description: "放松一下，劳逸结合！"
+            }
+        ];
+        
+        // 历史记录
+        let history = [];
+        
+        // 选择活动
+        function chooseActivity() {
+            const resultIcon = document.getElementById('resultIcon');
+            const resultText = document.getElementById('resultText');
+            const resultDescription = document.getElementById('resultDescription');
+            const chooseBtn = document.getElementById('chooseBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            
+            // 禁用按钮防止重复点击
+            chooseBtn.disabled = true;
+            chooseBtn.innerText = "选择中...";
+            
+            // 添加滚动效果
+            resultContainer.classList.add('rolling');
+            
+            // 模拟选择过程
+            let rollCount = 0;
+            const rollInterval = setInterval(() => {
+                // 临时显示随机活动
+                const tempActivity = activities[Math.floor(Math.random() * activities.length)];
+                resultIcon.textContent = tempActivity.icon;
+                resultText.textContent = tempActivity.name;
+                resultDescription.textContent = "";
+                
+                rollCount++;
+                if (rollCount > 6) { // 滚动6次后停止
+                    clearInterval(rollInterval);
+                    
+                    // 生成最终结果
+                    const finalActivity = activities[Math.floor(Math.random() * activities.length)];
+                    
+                    // 延迟显示最终结果，增加悬念
+                    setTimeout(() => {
+                        resultIcon.textContent = finalActivity.icon;
+                        resultText.textContent = finalActivity.name;
+                        resultDescription.textContent = finalActivity.description;
+                        
+                        // 添加到历史记录
+                        addToHistory(finalActivity);
+                        
+                        // 移除滚动效果
+                        resultContainer.classList.remove('rolling');
+                        
+                        // 恢复按钮
+                        chooseBtn.disabled = false;
+                        chooseBtn.innerText = "重新选择";
+                    }, 500);
+                }
+            }, 300);
+        }
+        
+        // 添加到历史记录
+        function addToHistory(activity) {
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            history.unshift({
+                activity: activity.name,
+                icon: activity.icon,
+                time: timeString
+            });
+            
+            // 只保留最近5条记录
+            if (history.length > 5) {
+                history.pop();
+            }
+            
+            updateHistoryDisplay();
+        }
+        
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            history.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <span>${item.icon} ${item.activity}</span>
+                    <span style="float: right; color: #999;">${item.time}</span>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // 初始化
+        window.onload = function() {
+            updateHistoryDisplay();
+        };
+    </script>
+</body>
+</html>
